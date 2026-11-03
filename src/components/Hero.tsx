@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, X, Heart } from 'lucide-react';
 import { ToolCategory } from '../types';
 
 interface HeroProps {
@@ -13,6 +13,7 @@ interface HeroProps {
   selectedCategory: string;
   onSelectCategory: (cat: string) => void;
   totalToolsCount: number;
+  favoritesCount: number;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -21,9 +22,11 @@ export const Hero: React.FC<HeroProps> = ({
   selectedCategory,
   onSelectCategory,
   totalToolsCount,
+  favoritesCount,
 }) => {
-  const categories: { id: string; label: string }[] = [
+  const categories: { id: string; label: string; count?: number }[] = [
     { id: 'all', label: 'All Tools' },
+    { id: 'favorites', label: 'Favorites', count: favoritesCount },
     { id: 'Finance', label: 'Finance' },
     { id: 'Health', label: 'Health' },
     { id: 'Math', label: 'Math' },
@@ -78,13 +81,35 @@ export const Hero: React.FC<HeroProps> = ({
             type="button"
             onClick={() => onSelectCategory(c.id)}
             aria-pressed={selectedCategory === c.id}
-            className={`px-4 py-2 rounded-full text-xs font-semibold transition-all border ${
+            className={`px-4 py-2 rounded-full text-xs font-semibold transition-all border flex items-center gap-1.5 ${
               selectedCategory === c.id
                 ? 'bg-[#0f2a24] text-[#ffffff] dark:bg-[#e6f2ee] dark:text-[#0c1714] border-[#0f2a24] dark:border-[#e6f2ee] shadow-2xs'
                 : 'bg-[#ffffff] dark:bg-[#132420] text-[#0f2a24] dark:text-[#e6f2ee] border-[#d5e0dc] dark:border-[#243a35] hover:border-[#0f766e] dark:hover:border-[#2dd4bf]'
             }`}
           >
-            {c.label}
+            {c.id === 'favorites' && (
+              <Heart
+                className={`w-3.5 h-3.5 ${
+                  selectedCategory === 'favorites'
+                    ? 'fill-rose-400 text-rose-400'
+                    : favoritesCount > 0
+                    ? 'fill-rose-500 text-rose-500'
+                    : 'text-[#4f6b64]'
+                }`}
+              />
+            )}
+            <span>{c.label}</span>
+            {c.count !== undefined && c.count > 0 && (
+              <span
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold font-mono ${
+                  selectedCategory === c.id
+                    ? 'bg-rose-500 text-white'
+                    : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
+                }`}
+              >
+                {c.count}
+              </span>
+            )}
           </button>
         ))}
       </div>

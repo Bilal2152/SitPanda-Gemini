@@ -3,30 +3,28 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { X, RotateCcw, Copy, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Copy, Check } from 'lucide-react';
 
 interface ScientificFloatingModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onCalculationDone?: (summary: string) => void;
 }
 
-export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = ({ isOpen, onClose }) => {
+export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = ({
+  isOpen,
+  onClose,
+  onCalculationDone,
+}) => {
   const [display, setDisplay] = useState('0');
   const [equation, setEquation] = useState('');
   const [isRad, setIsRad] = useState(false);
-  const [memory, setMemory] = useState<number>(0);
   const [copied, setCopied] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
 
-  if (!isOpen) return null;
-
   const handleDigit = (d: string) => {
-    if (display === '0' || display === 'Error') {
-      setDisplay(d);
-    } else {
-      setDisplay(display + d);
-    }
+    setDisplay((prev) => (prev === '0' || prev === 'Error' ? d : prev + d));
   };
 
   const handleOperator = (op: string) => {
@@ -40,11 +38,7 @@ export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = (
   };
 
   const handleBackspace = () => {
-    if (display.length <= 1) {
-      setDisplay('0');
-    } else {
-      setDisplay(display.slice(0, -1));
-    }
+    setDisplay((prev) => (prev.length <= 1 || prev === 'Error' ? '0' : prev.slice(0, -1)));
   };
 
   const evaluateScientific = (funcName: string) => {
@@ -98,8 +92,12 @@ export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = (
     }
 
     const rounded = Math.round(res * 10000000000) / 10000000000;
+    const item = `${funcName}(${val}) = ${rounded}`;
     setDisplay(String(rounded));
-    setHistory((prev) => [`${funcName}(${val}) = ${rounded}`, ...prev.slice(0, 4)]);
+    setHistory((prev) => [item, ...prev.slice(0, 4)]);
+    if (onCalculationDone) {
+      onCalculationDone(item);
+    }
   };
 
   const handleEquals = () => {
@@ -134,10 +132,68 @@ export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = (
       setHistory((prev) => [historyItem, ...prev.slice(0, 4)]);
       setDisplay(String(rounded));
       setEquation('');
+      if (onCalculationDone) {
+        onCalculationDone(historyItem);
+      }
     } catch {
       setDisplay('Error');
     }
   };
+
+  // Keyboard navigation when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept if modifier keys like Ctrl or Cmd are held
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      const key = e.key;
+
+      if (key >= '0' && key <= '9') {
+        e.preventDefault();
+        handleDigit(key);
+      } else if (key === '.') {
+        e.preventDefault();
+        setDisplay((prev) => (prev.includes('.') ? prev : prev + '.'));
+      } else if (key === '+') {
+        e.preventDefault();
+        handleOperator('+');
+      } else if (key === '-') {
+        e.preventDefault();
+        handleOperator('−');
+      } else if (key === '*') {
+        e.preventDefault();
+        handleOperator('×');
+      } else if (key === '/') {
+        e.preventDefault();
+        handleOperator('÷');
+      } else if (key === '^') {
+        e.preventDefault();
+        handleOperator('^');
+      } else if (key === '%' && !e.shiftKey) {
+        e.preventDefault();
+        handleOperator('%');
+      } else if (key === 'Enter' || key === '=') {
+        e.preventDefault();
+        handleEquals();
+      } else if (key === 'Backspace') {
+        e.preventDefault();
+        handleBackspace();
+      } else if (key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      } else if (key === 'c' || key === 'C') {
+        e.preventDefault();
+        handleClear();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, display, equation]);
+
+  if (!isOpen) return null;
 
   const copyResult = () => {
     navigator.clipboard.writeText(display);
@@ -164,6 +220,9 @@ export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = (
             >
               {isRad ? 'RAD' : 'DEG'}
             </button>
+            <span className="hidden sm:inline-block text-[11px] text-[#4f6b64] dark:text-[#9fb8b1] font-mono">
+              [Keyboard Enabled]
+            </span>
           </div>
           <div className="flex items-center gap-1">
             <button
@@ -224,6 +283,7 @@ export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = (
           <button
             onClick={handleClear}
             className="p-2 sm:p-2.5 rounded-lg bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200 hover:opacity-80 active:scale-95 transition-all text-xs sm:text-sm font-bold"
+            title="Clear (C or Esc)"
           >
             AC
           </button>
@@ -257,6 +317,7 @@ export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = (
             onClick={handleBackspace}
             className="p-2 sm:p-2.5 rounded-lg bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 hover:opacity-80 flex items-center justify-center"
             aria-label="Backspace"
+            title="Backspace"
           >
             ⌫
           </button>
@@ -283,6 +344,7 @@ export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = (
           <button
             onClick={() => handleOperator('÷')}
             className="p-2.5 sm:p-3 rounded-lg bg-[#0f766e]/10 dark:bg-[#2dd4bf]/15 text-[#0f766e] dark:text-[#2dd4bf] font-bold text-base"
+            title="Divide (/)"
           >
             ÷
           </button>
@@ -315,6 +377,7 @@ export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = (
           <button
             onClick={() => handleOperator('×')}
             className="p-2.5 sm:p-3 rounded-lg bg-[#0f766e]/10 dark:bg-[#2dd4bf]/15 text-[#0f766e] dark:text-[#2dd4bf] font-bold text-base"
+            title="Multiply (*)"
           >
             ×
           </button>
@@ -347,6 +410,7 @@ export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = (
           <button
             onClick={() => handleOperator('−')}
             className="p-2.5 sm:p-3 rounded-lg bg-[#0f766e]/10 dark:bg-[#2dd4bf]/15 text-[#0f766e] dark:text-[#2dd4bf] font-bold text-base"
+            title="Subtract (-)"
           >
             −
           </button>
@@ -381,12 +445,14 @@ export const ScientificFloatingModal: React.FC<ScientificFloatingModalProps> = (
           <button
             onClick={() => handleOperator('+')}
             className="p-2.5 sm:p-3 rounded-lg bg-[#0f766e]/10 dark:bg-[#2dd4bf]/15 text-[#0f766e] dark:text-[#2dd4bf] font-bold text-base"
+            title="Add (+)"
           >
             +
           </button>
           <button
             onClick={handleEquals}
             className="p-2.5 sm:p-3 rounded-lg bg-[#0f766e] text-white dark:bg-[#2dd4bf] dark:text-[#04201c] font-extrabold text-base shadow-sm hover:opacity-90 active:scale-95"
+            title="Calculate (Enter or =)"
           >
             =
           </button>

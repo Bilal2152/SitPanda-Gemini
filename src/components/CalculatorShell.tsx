@@ -37,11 +37,19 @@ interface CalculatorShellProps {
   tool: ToolItem;
   onBack: () => void;
   onSelectTool: (toolId: string) => void;
+  onRecordCalculation?: (toolId: string, toolName: string, summary: string) => void;
 }
 
-export const CalculatorShell: React.FC<CalculatorShellProps> = ({ tool, onBack, onSelectTool }) => {
+export const CalculatorShell: React.FC<CalculatorShellProps> = ({ tool, onBack, onSelectTool, onRecordCalculation }) => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [showGuide, setShowGuide] = useState(true);
+
+  // Automatically record view/usage into recent calculations if not already recorded
+  React.useEffect(() => {
+    if (onRecordCalculation && tool) {
+      onRecordCalculation(tool.id, tool.name, `${tool.name} viewed`);
+    }
+  }, [tool.id]);
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);

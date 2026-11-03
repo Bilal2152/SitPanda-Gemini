@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Sun, Moon, Calculator as CalcIcon, Menu, X } from 'lucide-react';
+import { Sun, Moon, Calculator as CalcIcon, Menu, X, Heart } from 'lucide-react';
 import { ToolCategory } from '../types';
 
 interface HeaderProps {
@@ -14,6 +14,7 @@ interface HeaderProps {
   isDark: boolean;
   onToggleTheme: () => void;
   onGoHome: () => void;
+  favoritesCount: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -23,11 +24,13 @@ export const Header: React.FC<HeaderProps> = ({
   isDark,
   onToggleTheme,
   onGoHome,
+  favoritesCount,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navCategories: { id: string; label: string }[] = [
+  const navCategories: { id: string; label: string; count?: number }[] = [
     { id: 'all', label: 'All Tools' },
+    { id: 'favorites', label: 'Favorites', count: favoritesCount },
     { id: 'Finance', label: 'Finance' },
     { id: 'Health', label: 'Health' },
     { id: 'Math', label: 'Math' },
@@ -72,11 +75,17 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 key={cat.id}
                 onClick={() => onSelectCategory(cat.id)}
-                className={`hover:text-[#0f2a24] dark:hover:text-[#e6f2ee] transition-colors whitespace-nowrap shrink-0 py-1 ${
+                className={`hover:text-[#0f2a24] dark:hover:text-[#e6f2ee] transition-colors whitespace-nowrap shrink-0 py-1 flex items-center gap-1.5 ${
                   currentCategory === cat.id ? 'text-[#0f766e] dark:text-[#2dd4bf] font-semibold border-b-2 border-[#0f766e] dark:border-[#2dd4bf]' : ''
                 }`}
               >
-                {cat.label}
+                {cat.id === 'favorites' && <Heart className={`w-3.5 h-3.5 ${favoritesCount > 0 ? 'fill-rose-500 text-rose-500' : ''}`} />}
+                <span>{cat.label}</span>
+                {cat.count !== undefined && cat.count > 0 && (
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 font-bold font-mono">
+                    {cat.count}
+                  </span>
+                )}
               </button>
             ))}
           </nav>
@@ -86,7 +95,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenQuickCalc}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-[#0f766e] text-white hover:bg-[#0c615b] dark:bg-[#2dd4bf] dark:text-[#04201c] dark:hover:bg-[#5eead4] transition-all shadow-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0f766e] whitespace-nowrap shrink-0"
-              title="Open Quick Scientific Calculator"
+              title="Open Quick Scientific Calculator (or press numbers / operators on keyboard)"
               aria-label="Open Quick Scientific Calculator"
             >
               <CalcIcon className="w-4 h-4" />
@@ -125,13 +134,21 @@ export const Header: React.FC<HeaderProps> = ({
                 onSelectCategory(cat.id);
                 setMobileMenuOpen(false);
               }}
-              className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-between ${
                 currentCategory === cat.id
                   ? 'bg-[#0f766e]/10 dark:bg-[#2dd4bf]/15 text-[#0f766e] dark:text-[#2dd4bf] font-semibold'
                   : 'text-[#0f2a24] dark:text-[#e6f2ee] hover:bg-[#f4f7f5] dark:hover:bg-[#19312b]'
               }`}
             >
-              {cat.label}
+              <div className="flex items-center gap-2">
+                {cat.id === 'favorites' && <Heart className={`w-4 h-4 ${favoritesCount > 0 ? 'fill-rose-500 text-rose-500' : ''}`} />}
+                <span>{cat.label}</span>
+              </div>
+              {cat.count !== undefined && cat.count > 0 && (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 font-bold font-mono">
+                  {cat.count}
+                </span>
+              )}
             </button>
           ))}
           <div className="pt-2 border-t border-[#d5e0dc] dark:border-[#243a35]">

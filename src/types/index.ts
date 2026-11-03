@@ -17,3 +17,11 @@ export interface ToolItem {
 }
 
 export type ThemeMode = 'light' | 'dark';
+
+export interface RecentCalculation {
+  id: string;
+  toolId: string;
+  toolName: string;
+  summary: string;
+  timestamp: number;
+}
