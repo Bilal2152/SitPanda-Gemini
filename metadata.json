@@ -1,0 +1,6 @@
+{
+  "name": "SitPanda Tools",
+  "description": "Comprehensive suite of fast, intuitive, mobile-first calculators and tools for finance, fitness, math, dates, and construction with dark mode and high-contrast accessibility.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

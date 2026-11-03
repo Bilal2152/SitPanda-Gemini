@@ -1,0 +1,331 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>SitPanda Tools Home</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky header with tab nav, hero with search, category filter, tool grid */
+:root {
+  --bg: #f4f7f5;
+  --surface: #ffffff;
+  --ink: #0f2a24;
+  --muted: #4f6b64;
+  --line: #d5e0dc;
+  --accent: #0f766e;
+  --accent-ink: #ffffff;
+  --warm: #b4480f;
+  --display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1714;
+    --surface: #132420;
+    --ink: #e6f2ee;
+    --muted: #9fb8b1;
+    --line: #243a35;
+    --accent: #5eead4;
+    --accent-ink: #06201c;
+    --warm: #fb923c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1714;
+  --surface: #132420;
+  --ink: #e6f2ee;
+  --muted: #9fb8b1;
+  --line: #243a35;
+  --accent: #5eead4;
+  --accent-ink: #06201c;
+  --warm: #fb923c;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  transition: background-color .35s ease, color .35s ease;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface);
+}
+img, svg { max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+/* Header */
+.site-header {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  transition: background-color .35s ease, border-color .35s ease;
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.bar { display: flex; align-items: center; gap: 12px; padding-block: 12px; }
+.logo { font-family: var(--display); font-weight: 800; font-size: 20px; text-decoration: none; letter-spacing: -.01em; }
+.logo b { color: var(--accent); font-weight: 800; }
+.theme-btn {
+  margin-left: auto; flex: none;
+  width: 40px; height: 40px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  display: grid; place-items: center; cursor: pointer;
+  transition: background-color .3s, border-color .3s, transform .2s;
+}
+.theme-btn:hover { transform: rotate(12deg); border-color: var(--accent); }
+.theme-btn svg { width: 18px; height: 18px; }
+.theme-btn .moon { display: none; }
+:root[data-theme="dark"] .theme-btn .sun,
+:root:not([data-theme]) .theme-btn .sun { display: none; }
+:root[data-theme="dark"] .theme-btn .moon { display: block; }
+
+.tabs {
+  display: flex; gap: 4px; overflow-x: auto; padding-bottom: 10px;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tabs a {
+  flex: none; padding: 8px 14px; border-radius: 999px;
+  text-decoration: none; font-weight: 500; color: var(--muted);
+  transition: background-color .25s, color .25s;
+}
+.tabs a:hover { color: var(--ink); background: var(--bg); }
+.tabs a[aria-current="true"] { background: var(--accent); color: var(--accent-ink); }
+
+/* Hero */
+.hero { padding-block: 40px 28px; }
+.eyebrow { font-size: 13px; color: var(--warm); font-weight: 600; margin: 0 0 8px; }
+h1 {
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(28px, 7vw, 44px); line-height: 1.1;
+  margin: 0 0 12px; text-wrap: balance; letter-spacing: -.02em;
+}
+.lead { color: var(--muted); max-width: 52ch; margin: 0 0 22px; }
+.search {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: 4px 14px; max-width: 560px;
+  transition: border-color .25s, box-shadow .25s;
+}
+.search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent); }
+.search input {
+  flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink);
+  font: inherit; padding: 10px 0;
+}
+.search input:focus { outline: none; }
+.search input::placeholder { color: var(--muted); }
+
+/* Category filter */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 8px; }
+.chip {
+  font: inherit; font-size: 14px; padding: 7px 14px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  transition: background-color .25s, color .25s, border-color .25s;
+}
+.chip:hover { border-color: var(--accent); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* Tool grid */
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 28px 0 14px; }
+.section-head h2 { font-family: var(--display); font-size: 22px; margin: 0; }
+.count { color: var(--muted); font-size: 14px; }
+.grid {
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.tool {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 18px; border-radius: 14px; text-decoration: none;
+  background: var(--surface); border: 1px solid var(--line);
+  transition: transform .25s ease, border-color .25s ease, background-color .35s ease;
+  min-width: 0;
+}
+.tool:hover { transform: translateY(-2px); border-color: var(--accent); }
+.tool .cat { font-size: 12px; font-weight: 600; color: var(--warm); text-transform: none; }
+.tool h3 { font-family: var(--display); font-size: 18px; margin: 0; }
+.tool p { margin: 0; color: var(--muted); font-size: 14px; }
+.tool[hidden] { display: none; }
+.empty { color: var(--muted); padding: 24px 0; }
+.empty[hidden] { display: none; }
+
+footer {
+  margin-top: 48px; padding-block: 24px 36px; border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 13px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+@media (min-width: 760px) {
+  .bar { padding-block: 16px; }
+  .tabs { overflow: visible; padding-bottom: 14px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="bar">
+    <a class="logo" href="#home">Sit<b>Panda</b> Tools</a>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Dark ya light mode badlein">
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </div>
+  <nav class="tabs" aria-label="Main navigation">
+    <a href="#home" aria-current="true">Home</a>
+    <a href="#tools">Tools</a>
+    <a href="#tools">Calculators</a>
+    <a href="#guides">Guides</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main id="home">
+  <section class="hero">
+    <p class="eyebrow">Free online tools, duniya bhar ke liye</p>
+    <h1>Hisaab kitaab, ek jagah par</h1>
+    <p class="lead">Calculators aur tools jo aap ko jaldi sahi jawab dein. Har tool ke saath chhoti si guide bhi milti hai.</p>
+    <label class="search">
+      <span aria-hidden="true">&#128269;</span>
+      <input id="q" type="search" placeholder="Tool dhoondhein, jaise BMI ya Loan" autocomplete="off">
+    </label>
+    <div class="chips" role="group" aria-label="Category filter" id="chips">
+      <button class="chip" type="button" aria-pressed="true" data-cat="all">Sab</button>
+      <button class="chip" type="button" aria-pressed="false" data-cat="Finance">Finance</button>
+      <button class="chip" type="button" aria-pressed="false" data-cat="Health">Health</button>
+      <button class="chip" type="button" aria-pressed="false" data-cat="Math">Math</button>
+      <button class="chip" type="button" aria-pressed="false" data-cat="Date">Date &amp; Time</button>
+    </div>
+  </section>
+
+  <section id="tools" aria-labelledby="tools-h">
+    <div class="section-head">
+      <h2 id="tools-h">Popular tools</h2>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="grid" id="grid">
+      <a class="tool" href="#zakat" data-cat="Finance" data-name="zakat calculator">
+        <span class="cat">Finance</span>
+        <h3>Zakat Calculator</h3>
+        <p>Savings aur sone-chandi ki zakat ka hisaab.</p>
+      </a>
+      <a class="tool" href="#emi" data-cat="Finance" data-name="loan emi">
+        <span class="cat">Finance</span>
+        <h3>Loan EMI Calculator</h3>
+        <p>Monthly installment aur total interest dekhein.</p>
+      </a>
+      <a class="tool" href="#bmi" data-cat="Health" data-name="bmi body mass index">
+        <span class="cat">Health</span>
+        <h3>BMI Calculator</h3>
+        <p>Height aur weight se body mass index nikalein.</p>
+      </a>
+      <a class="tool" href="#percent" data-cat="Math" data-name="percentage">
+        <span class="cat">Math</span>
+        <h3>Percentage Calculator</h3>
+        <p>Percent, increase aur decrease ek jagah.</p>
+      </a>
+      <a class="tool" href="#age" data-cat="Date" data-name="age date">
+        <span class="cat">Date &amp; Time</span>
+        <h3>Age Calculator</h3>
+        <p>Exact age saal, mahinon aur dinon mein.</p>
+      </a>
+      <a class="tool" href="#datediff" data-cat="Date" data-name="date difference days">
+        <span class="cat">Date &amp; Time</span>
+        <h3>Date Difference</h3>
+        <p>Do tareekhon ke beech ke din ginein.</p>
+      </a>
+    </div>
+    <p class="empty" id="empty" hidden>Koi tool nahi mila. Doosra lafz try karein.</p>
+  </section>
+
+  <section id="guides" class="hero" style="padding-top:12px">
+    <h2 style="font-family:var(--display);font-size:22px;margin:0 0 8px">Guides</h2>
+    <p class="lead">Har tool ke saath formula aur example ek alag guide mein milega.</p>
+  </section>
+</main>
+
+<footer id="about">
+  <p>SitPanda Tools. Calculators ki information sirf general guidance ke liye hai. Ahem faislon se pehle mustanad source dekhein.</p>
+  <p id="contact">Contact: details jald shamil hongi.</p>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('themeBtn');
+  var KEY = 'sp-theme';
+  try {
+    var saved = localStorage.getItem(KEY);
+    if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
+  } catch (e) {}
+  btn.addEventListener('click', function () {
+    var explicit = root.getAttribute('data-theme');
+    var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var isDark = explicit ? explicit === 'dark' : systemDark;
+    var next = isDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+  });
+
+  var chips = document.querySelectorAll('.chip');
+  var tools = document.querySelectorAll('.tool');
+  var input = document.getElementById('q');
+  var count = document.getElementById('count');
+  var empty = document.getElementById('empty');
+  var cat = 'all';
+
+  function apply() {
+    var q = input.value.trim().toLowerCase();
+    var shown = 0;
+    tools.forEach(function (t) {
+      var okCat = cat === 'all' || t.dataset.cat === cat;
+      var okQ = !q || t.dataset.name.indexOf(q) !== -1 || t.textContent.toLowerCase().indexOf(q) !== -1;
+      var show = okCat && okQ;
+      t.hidden = !show;
+      if (show) shown++;
+    });
+    count.textContent = shown + ' tools';
+    empty.hidden = shown !== 0;
+  }
+
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      cat = c.dataset.cat;
+      chips.forEach(function (x) { x.setAttribute('aria-pressed', x === c ? 'true' : 'false'); });
+      apply();
+    });
+  });
+  input.addEventListener('input', apply);
+  apply();
+
+  var tabs = document.querySelectorAll('.tabs a');
+  tabs.forEach(function (a) {
+    a.addEventListener('click', function () {
+      tabs.forEach(function (x) { x.removeAttribute('aria-current'); });
+      a.setAttribute('aria-current', 'true');
+    });
+  });
+})();
+</script>
+</body>
+</html>
+
+</body></html>

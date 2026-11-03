@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #f4f7f5;
+  --surface: #ffffff;
+  --surface-hover: #f9fbf9;
+  --ink: #0f2a24;
+  --muted: #4f6b64;
+  --line: #d5e0dc;
+  --accent: #0f766e;
+  --accent-light: #e6f6f4;
+  --accent-ink: #ffffff;
+  --warm: #b4480f;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0c1714;
+  --surface: #132420;
+  --surface-hover: #19312b;
+  --ink: #e6f2ee;
+  --muted: #9fb8b1;
+  --line: #243a35;
+  --accent: #2dd4bf;
+  --accent-light: #113630;
+  --accent-ink: #04201c;
+  --warm: #fb923c;
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg);
+  color: var(--ink);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono-numbers {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
